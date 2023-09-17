@@ -108,8 +108,8 @@
                     <td>{{publisher.area}}</td>
                     <td>{{publisher.status}}</td>
                     <td>{{publisher.advance_payment}}</td>
-                    <td>{{publisher.fees_percentage}}</td>
-                    <td>{{publisher.ratio_percentage}}</td>
+                    <td>{% widthratio publisher.fees_percentage 1 100 %}%</td>
+                    <td>{% widthratio publisher.ratio_percentage 1 100 %}%</td>
                     <td>{{publisher.renewal_time}}</td>
                   </tr>
                 </tbody>
