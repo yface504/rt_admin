@@ -48,6 +48,3 @@ class Publisher(models.Model): #资料库首字母一定要大写
     start_time = models.DateField(null=True, blank=True,verbose_name='合作開始時間')
     end_time = models.DateField(null=True, blank=True,verbose_name='合作結束時間')
     mark = models.CharField(max_length=255,null=True, blank=True,verbose_name='註記')
-
-    # def __str__(self):
-    #     return f'{self.name}-{self.area}-{self.status}'

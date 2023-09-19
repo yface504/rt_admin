@@ -1,15 +1,13 @@
 from django.shortcuts import render,redirect
-from work import models
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
-from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+from django.contrib.auth.decorators import login_required #确保只有已登录的用户才能访问这些视图
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger #分页
 from .models import Publisher
+
+
 # Create your views here.
 
-def index(request):
-    pass
-# 返回響應
-    return render(request,'index.html')
+
 
 
 def login_view(request):
@@ -26,10 +24,17 @@ def login_view(request):
             return render(request,'login.html',locals())
     return render(request,'login.html')
 
-def log_out(request):
+def log_out_view(request):
     logout(request)
-    return redirect('/')
+    return redirect('login')
 
+@login_required(login_url='login') #redirect when user is not logged in
+def index(request):
+    user = request.user 
+# 返回響應
+    return render(request,'index.html', {'user': user})
+
+@login_required(login_url='login')
 def publisher(request):
     publishers = Publisher.objects.all()
     return render(request, 'publisher.html', {'publishers': publishers})
