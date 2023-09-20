@@ -21,7 +21,7 @@
         <nav class="navbar navbar-expand-xl">
             <div class="container h-100">
                 <a class="navbar-brand" href="../admin">
-                    <h1 class="tm-site-title mb-0">巴比莱思行政后台</h1>
+                    <h1 class="tm-site-title mb-0">巴比莱思行政後台</h1>
                 </a>
                 <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,20 +37,11 @@
                                 <span class="sr-only">(current)</span>
                             </a>
                         </li>
-                        <li class="nav-item dropdown">
-
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
                                 <i class="far fa-file-alt"></i>
-                                <span>
-                                    收入 <i class="fas fa-angle-down"></i>
-                                </span>
+                                收入
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Daily Report</a>
-                                <a class="dropdown-item" href="#">Weekly Report</a>
-                                <a class="dropdown-item" href="#">Yearly Report</a>
-                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="products.html">
@@ -60,9 +51,9 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="accounts.html">
+                            <a class="nav-link" href="{% url 'update' %}">
                                 <i class="fas fa-cloud-upload-alt"></i>
-                                版稅作業
+                                上傳
                             </a>
                         </li>
                         <li class="nav-item">

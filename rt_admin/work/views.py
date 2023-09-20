@@ -38,3 +38,9 @@ def index(request):
 def publisher(request):
     publishers = Publisher.objects.all()
     return render(request, 'publisher.html', {'publishers': publishers})
+
+
+@login_required(login_url='login')
+def update(request):
+    pass
+    return render(request,'update.html')
