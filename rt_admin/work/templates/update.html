@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../static/css/bootstrap.min.css" />
     <!-- https://getbootstrap.com/ -->
     <link rel="stylesheet" href="../static/css/templatemo-style.css">
-    
+
   </head>
 
   <body id="reportsPage">
@@ -84,9 +84,24 @@
                             <p class="text-white mt-5 mb-5">如果有簽新的合約在台灣，記得提供新的出版社資料給孟姝。</p>
                         </div>
                     </div>
-                  <button class="btn btn-primary btn-block text-uppercase">
-                    上傳文件
-                  </button>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label class="btn btn-primary btn-block text-uppercase" >
+                            選擇檔案<input type="file" name="files"  id="file-input" multiple style="display: none;">
+                        </label>
+                        <div id="file-result"></div>
+                        <button type="submit" class="btn btn-primary btn-block text-uppercase">上傳文件</button>
+                        <div>
+                            {% if success_files %}
+                                <br><p style="color: white;">文件上傳成功：</p>
+                                <ul>{% for file_name in success_files %}
+                                    <p style="color: white;">{{ file_name }}</p>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                            {% endif %}
+                        </div>
+                    </form>
                 </div>
               </div>
               <div class="tm-block-col tm-col-account-settings">
@@ -131,8 +146,8 @@
       </div>
     </footer>
 
-    <script src="../static/js/jquery-3.3.1.min.js"></script>
     <!-- https://jquery.com/download/ -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../static/js/bootstrap.min.js"></script>
     <!-- https://getbootstrap.com/ -->
     <script>
@@ -142,5 +157,33 @@
         });
       });
     </script>
+
+
+<script>
+$(document).ready(function() {
+    // 监听文件输入框的变化事件
+    $('#file-input').on('change', function() {
+        // 获取所选文件的名称
+        var selectedFiles = $(this)[0].files;
+        var fileNames = [];
+        for (var i = 0; i < selectedFiles.length; i++) {
+            fileNames.push(selectedFiles[i].name);
+        }
+
+        // 将文件名数组连接成字符串，每个文件名占据一行，并使用<br>标签作为换行标记
+        var fileNamesText = fileNames.join('<br>');
+
+        // 更新<div>元素的内容以显示文件名，使用HTML格式
+        var fileResultElement = $('#file-result');
+        fileResultElement.html('已選擇文件:<br>' + fileNamesText);
+
+        // 设置文本颜色为白色
+        fileResultElement.css('color', 'white');
+
+        // 设置字号为较小的大小（例如，10px）
+        fileResultElement.css('font-size', '10px');
+    });
+});
+</script>
   </body>
 </html>
