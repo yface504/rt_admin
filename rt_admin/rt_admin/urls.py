@@ -8,5 +8,6 @@ urlpatterns = [
     path('logout/', views.log_out_view , name='logout'),
     path('publisher/' ,views.publisher, name='publisher'),
     path('update/' ,views.update, name='update'),
+    path('paper/' ,views.paper, name='paper'),
     path('admin/', admin.site.urls),
 ]

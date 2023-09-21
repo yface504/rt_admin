@@ -96,7 +96,7 @@ def convert_en(file_path):
         df = pd.read_csv(file_path)
 
         # 提取指定标题的列数据
-        selected_columns = ['Release date','Title','Price','Total sales (current month)','Publisher']
+        selected_columns = ['Release date','Title','Author','Price','Total sales (current month)','Publisher']
         df = df[selected_columns]
 
         # 删除'価格'列中值为0的行
@@ -169,3 +169,8 @@ def update(request):
 
     context = {"success_files": success_files}
     return render(request, 'update.html', context)
+
+
+@login_required(login_url='login')
+def paper(request):
+    return render(request, 'paper.html')
