@@ -1,15 +1,12 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required #确保只有已登录的用户才能访问这些视图
-from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger #分页
 from .models import Publisher
 from django.conf import settings
 import os
 import codecs
-from django.http import HttpResponse
-import openpyxl
-import csv
 import pandas as pd
+import openpyxl
 
 def login_view(request):
     if request.method == 'POST':
@@ -122,9 +119,34 @@ def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, output_csv_file_path)
         df = df[selected_columns]
         
         # 将数据保存为CSV文件
-        df.to_csv(output_csv_file_path, index=False, encoding='utf-8')
+        # df.to_csv(output_csv_file_path, index=False, encoding='utf-8')
         
-        print(f"第{sheet_index + 1}页已成功提取指定列数据并转换为CSV文件。")
+        # 提取tw_date和tw_shelf_name
+        file_name_parts = os.path.splitext(os.path.basename(output_csv_file_path))[0].split('_')
+        tw_date = file_name_parts[0]
+        tw_shelf_name = file_name_parts[1]
+
+        # 查询匹配的publisher数据
+        publisher = Publisher.objects.filter(shelf_name=tw_shelf_name).first()
+
+        if publisher:
+            # 提取需要的数据
+            tw_fees = publisher.fees_percentage
+            tw_ratio = publisher.ratio_percentage
+            tw_name = publisher.name
+
+            # 构建新文件名
+            new_file_name = f"{tw_name}_TW_{tw_date}"
+            new_file_dir = os.path.join(settings.STATICFILES_DIRS[0], 'paper')  # 目录路径
+            new_file_path = os.path.join(new_file_dir, new_file_name + '.xlsx')
+
+            # # 将处理后的数据保存为Excel文件
+            df.to_excel(new_file_path, index=False, engine='openpyxl')
+
+            print(f"第{sheet_index + 1}页已成功提取指定列数据。")
+        else:
+            print(f"找不到匹配的Publisher数据。")
+            
     except Exception as e:
         print(f"转换失败: {str(e)}")
 
@@ -158,7 +180,8 @@ def update(request):
             if uploaded_file.name.endswith(('.xls', '.xlsx')):
                 # 提取第二页并将其转换为CSV文件
                 sheet_index_to_convert = 1  # 第二页的索引为1
-                output_csv_file_path = os.path.splitext(file_path)[0]+ '.csv'
+                output_csv_file_path = os.path.splitext(file_path)[0]
+                # + '.csv'
                 convert_xlsx_sheet_to_csv(file_path, sheet_index_to_convert, output_csv_file_path)
                 
                 # 删除原始XLS或XLSX文件

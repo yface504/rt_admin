@@ -113,7 +113,7 @@ STATICFILES_DIRS = [
 # 配置媒体文件的URL前缀，用于在模板中引用媒体文件。
 MEDIA_URL = 'update/'
 # 配置媒体文件根目录，这是您上传的文件存储位置。
-MEDIA_ROOT = os.path.join(BASE_DIR, "work", 'static','update'),
+MEDIA_ROOT = os.path.join(BASE_DIR, "work", 'static','update')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
