@@ -91,40 +91,16 @@
               <option value="3">5月</option>
               <option value="4">4月</option>
             </select>
+            <br><br>
+            {% for link in download_links %}
+            <a href="/paper/{{ link }}" download>{{ link }}</a><br>
+            {% endfor %}
+            
+
           </div>
         </div>
       </div>
-              <table class="table table-hover tm-table-small tm-product-table">
-                <thead>
-                  <tr>
-                    <th scope="col">出版社</th>
-                    <th scope="col">合作地區</th>
-                    <th scope="col">平台收入</th>
-                    <th scope="col">版稅</th>
-                    <th scope="col">匯率</th>
-                    <th scope="col">結算</th>
-                    <th scope="col">剩餘保底金</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for publisher in publishers %}
-                  <tr>
-                    <td>{{publisher.name}}</td>
-                    <td>{{publisher.area}}</td>
-                    <td>{{publisher.status}}</td>
-                    <td>{{publisher.advance_payment}}</td>
-                    <td>{% widthratio publisher.fees_percentage 1 100 %}%</td>
-                    <td>{% widthratio publisher.ratio_percentage 1 100 %}%</td>
-                    <td>{{publisher.renewal_time}}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            <!-- </div> -->
-            <!-- table container -->
-          <!-- </div> -->
-        <!-- </div> -->
-      <!-- </div> -->
+
     </div>
     <footer class="tm-footer row tm-mt-small">
       <div class="col-12 font-weight-light">

@@ -141,9 +141,31 @@ def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, output_csv_file_path)
             new_file_path = os.path.join(new_file_dir, new_file_name + '.xlsx')
 
             # # 将处理后的数据保存为Excel文件
-            df.to_excel(new_file_path, index=False, engine='openpyxl')
+            # df.to_excel(new_file_path, index=False, engine='openpyxl')
 
-            print(f"第{sheet_index + 1}页已成功提取指定列数据。")
+            # 打开 sample.xlsx 文件，仅加载 report 工作表
+            sample_file_path = os.path.abspath(os.path.join(settings.STATICFILES_DIRS[0], 'sample.xlsx'))
+            sample_workbook = openpyxl.load_workbook(sample_file_path, data_only=True)
+            sample_report_sheet = sample_workbook['report']
+
+            # 修改 report 工作表的特定单元格 D5 为 tw_fees
+            sample_report_sheet['D5'] = tw_fees
+
+            # 添加明细工作表
+            new_sheet = sample_workbook.create_sheet("明細")
+
+            # 将处理后的数据存放在 "明細" 中，首先添加列标题
+            new_sheet.append(df.columns.tolist())  # 添加列标题
+
+            # 添加 DataFrame 中的数据行
+            for _, row in df.iterrows():
+                new_sheet.append(row.tolist())
+
+            # 创建新的.xlsx文件，将 sample.xlsx 另存为新路径和文件名
+            new_sample_file_path = os.path.join(new_file_dir, new_file_path)
+            sample_workbook.save(new_sample_file_path)
+
+            print(f"已创建新的 '明細' 工作表并保存到新文件。")
         else:
             print(f"找不到匹配的Publisher数据。")
             
@@ -196,4 +218,21 @@ def update(request):
 
 @login_required(login_url='login')
 def paper(request):
-    return render(request, 'paper.html')
+    # 指定目录路径
+    directory_path = os.path.join(settings.STATICFILES_DIRS[0], 'paper')  # 目录路径
+
+    # 获取目录中的所有文件名
+    file_names = [os.path.basename(file_path) for file_path in os.listdir(directory_path)]
+
+
+
+    # 构建下载链接列表
+    download_links = []
+    for file_name in file_names:
+        # 构建文件的完整路径
+        file_path = os.path.join(directory_path, file_name)
+    
+        # 使用文件名作为链接文本，将文件路径添加到下载链接
+        download_links.append(f'{file_name}')
+
+    return render(request, 'paper.html',  {'download_links': download_links})
