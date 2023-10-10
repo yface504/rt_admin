@@ -8,6 +8,10 @@ import codecs
 import pandas as pd
 import openpyxl
 
+#載入時間模塊
+from datetime import datetime, timedelta
+import calendar
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get("username")
@@ -38,7 +42,7 @@ def publisher(request):
     return render(request, 'publisher.html', {'publishers': publishers})
 
 
-
+#處理日本報表
 def convert_shift_jis_to_utf8(file_path): #SHIFT_JIS编码转换为UTF-8编码
     try:
         # 读取SHIFT_JIS编码的文件
@@ -74,6 +78,7 @@ def convert_shift_jis_to_utf8(file_path): #SHIFT_JIS编码转换为UTF-8编码
     except Exception as e:
         print(f"处理失败: {str(e)}")
 
+#處理美國報表
 def convert_en(file_path):
     try:
         # 读取SHIFT_JIS编码的文件
@@ -109,6 +114,7 @@ def convert_en(file_path):
     except Exception as e:
         print(f"处理en失败: {str(e)}")
 
+#處理台灣報表
 def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, output_csv_file_path): #EXCEL轉成csv
     try:
         # 读取Excel文件
@@ -125,6 +131,18 @@ def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, output_csv_file_path)
         file_name_parts = os.path.splitext(os.path.basename(output_csv_file_path))[0].split('_')
         tw_date = file_name_parts[0]
         tw_shelf_name = file_name_parts[1]
+
+        # 将字符串"20230801"转换为日期格式
+        date_str = "20230801"
+        date = datetime.strptime(date_str, "%Y%m%d")
+
+        # 增加一个月
+        new_date = date + timedelta(days=calendar.monthrange(date.year, date.month)[1])
+
+        # 设置为该月的最后一天
+        last_day = datetime(new_date.year, new_date.month, calendar.monthrange(new_date.year, new_date.month)[1])
+
+
 
         # 查询匹配的publisher数据
         publisher = Publisher.objects.filter(shelf_name=tw_shelf_name).first()
