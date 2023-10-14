@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required #确保只有已登录
 from .models import Publisher
 from django.conf import settings
 import os
-import codecs
 import pandas as pd
 import openpyxl
 
@@ -15,7 +14,7 @@ from bs4 import BeautifulSoup
 from decimal import Decimal
 
 #載入時間模塊
-from datetime import datetime, timedelta
+from datetime import datetime
 import calendar
 
 
@@ -195,7 +194,7 @@ def paper(df, selected_columns, SUMsales, titleDate, Pname): #EXCEL轉成csv
                 # 修改 report 工作表的特定单元格
                 srs['B3'] = name #出版社名
                 srs['F3'] = int(titleDate) #報表月            
-                srs['A5'] = 'TW'
+                srs['A5'] = area_code
                 srs['B5'] = FxRate
                 srs['C5'] = sum
                 srs['D5'] = fees #手續費
