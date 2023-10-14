@@ -49,9 +49,13 @@ def update(request):
             if uploaded_file.name.endswith(('.xls', '.xlsx')):
                 # 提取第二页并将其转换为CSV文件
                 sheet_index_to_convert = 1  # 第二页的索引为1
-                output_csv_file_path = os.path.splitext(file_path)[0]
+                file_name_parts = os.path.splitext(os.path.basename(file_path))[0].split('_')
+                titleDate = file_name_parts[0]
+
+    # file_name_parts = os.path.splitext(os.path.basename(output_csv_file_path))[0].split('_')
+    #         titleDate = file_name_parts[0]
                 # + '.csv'
-                convert_xlsx_sheet_to_csv(file_path, sheet_index_to_convert, output_csv_file_path)
+                convert_xlsx_sheet_to_csv(file_path, sheet_index_to_convert, titleDate)
                 
                 # 删除原始XLS或XLSX文件
                 os.remove(file_path)
@@ -122,7 +126,7 @@ def convert_en(file_path):
         print(f"处理en失败: {str(e)}")
 
 #處理台灣報表
-def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, output_csv_file_path): #EXCEL轉成csv
+def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, titleDate): #EXCEL轉成csv
     try:
         # 读取Excel文件
         df = pd.read_excel(xlsx_file_path, sheet_name=sheet_index)
@@ -144,11 +148,6 @@ def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, output_csv_file_path)
 
             # 将总和传递给 sum 变量
             sum = total_sales
-            
-            # 提取titleDate和tw_shelf_name
-            file_name_parts = os.path.splitext(os.path.basename(output_csv_file_path))[0].split('_')
-            titleDate = file_name_parts[0]
-            # tw_shelf_name = file_name_parts[1]
 
             # 查询匹配的publisher数据
             publisher = Publisher.objects.filter(shelf_name=publisher_name).first()
