@@ -35,28 +35,30 @@ def update(request):
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
             
-            # 如果文件名以"PAS"开头且以"jp"结尾，进行编码转换
+            # 如果文件名以"PAS"开头且以"jp"结尾，进行日本各家版稅結算
             if uploaded_file.name.startswith("PAS") and uploaded_file.name.endswith("jp.csv"):
                 # 调用编码转换函数
                 convert_shift_jis_to_utf8(file_path)
 
-            # 如果文件名以"PAS"开头且以"jp"结尾，进行编码转换
+            # 如果文件名以"PAS"开头且以"en"结尾，进行美國各家版稅結算
             if uploaded_file.name.startswith("PAS") and uploaded_file.name.endswith("en.csv"):
                 # 调用编码转换函数
                 convert_en(file_path)
             
-            # 如果文件是XLS或XLSX，提取第二页并将其转换为CSV文件
+            # 如果文件是XLS或XLSX，提取第二页，进行台灣各家版稅結算
             if uploaded_file.name.endswith(('.xls', '.xlsx')):
                 # 提取第二页并将其转换为CSV文件
-                sheet_index_to_convert = 1  # 第二页的索引为1
-                file_name_parts = os.path.splitext(os.path.basename(file_path))[0].split('_')
-                titleDate = file_name_parts[0]
+                sheet_index = 1  # 第二页的索引为1
 
-    # file_name_parts = os.path.splitext(os.path.basename(output_csv_file_path))[0].split('_')
-    #         titleDate = file_name_parts[0]
-                # + '.csv'
-                convert_xlsx_sheet_to_csv(file_path, sheet_index_to_convert, titleDate)
-                
+                # 提取原文件名上的日期
+                titleDate = os.path.splitext(os.path.basename(file_path))[0].split('_')[0]
+
+                selected_columns = ['系列書名', '集數', '出版社', '售價', '購買日期']
+                SUMsales ='售價'
+        
+                # 交由下列函數進行
+                paper(file_path, selected_columns, SUMsales, titleDate, sheet_index)
+
                 # 删除原始XLS或XLSX文件
                 os.remove(file_path)
             
@@ -125,14 +127,13 @@ def convert_en(file_path):
     except Exception as e:
         print(f"处理en失败: {str(e)}")
 
-#處理台灣報表
-def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, titleDate): #EXCEL轉成csv
+#處理報表
+def paper(file_path, selected_columns, SUMsales, titleDate, sheet_index): #EXCEL轉成csv
     try:
         # 读取Excel文件
-        df = pd.read_excel(xlsx_file_path, sheet_name=sheet_index)
+        df = pd.read_excel(file_path, sheet_name=sheet_index)
         
         # 提取包含指定标题的列数据
-        selected_columns = ['系列書名', '集數', '出版社', '售價', '購買日期']
         df = df[selected_columns]
         
         # 使用groupby按出版社名称分组
@@ -144,7 +145,7 @@ def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, titleDate): #EXCEL轉
             # publisher_name 可以用于标识出版社
 
             # 计算"售價"列的总和
-            total_sales = publisher_data['售價'].sum()
+            total_sales = publisher_data[SUMsales].sum()
 
             # 将总和传递给 sum 变量
             sum = total_sales
@@ -211,6 +212,7 @@ def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, titleDate): #EXCEL轉
             
     except Exception as e:
         print(f"转换失败: {str(e)}")
+    
 
 # FindFxRate 查詢中國人民銀行外匯匯率
 def FindFxRate(area, exchange_rate_method, titleDate):

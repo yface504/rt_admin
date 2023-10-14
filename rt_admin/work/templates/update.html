@@ -100,6 +100,14 @@
                                 </ul>
                             {% else %}
                             {% endif %}
+                            {% if check_publishers %}
+                            <br><p style="color: white;">下列出版社不在資料庫：</p>
+                            <ul>{% for check_publisher in check_publishers %}
+                                <p style="color: white;">{{ check_publisher }}</p>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                        {% endif %}
                         </div>
                     </form>
                 </div>
