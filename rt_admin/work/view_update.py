@@ -37,27 +37,97 @@ def update(request):
             
             # 如果文件名以"PAS"开头且以"jp"结尾，进行日本各家版稅結算
             if uploaded_file.name.startswith("PAS") and uploaded_file.name.endswith("jp.csv"):
-                # 调用编码转换函数
-                convert_shift_jis_to_utf8(file_path)
+
+                df = pd.read_csv(file_path, encoding='shift_jis')
+
+                # 提取指定标题的列数据
+                selected_columns = ['掲載日', '書名', '著者名', '価格', '当月合計冊数', '出版社名']
+                df = df[selected_columns]
+
+                # 删除'価格'列中值为0的行
+                df = df[df['価格'] != 0]
+
+                # 新增 'SalesAmount' 列
+                df['SalesAmount'] = df['価格'] * df['当月合計冊数']
+                selected_columns = ['掲載日', '書名', '著者名', '価格', '当月合計冊数', '出版社名', 'SalesAmount']
+
+
+                SUMsales ='SalesAmount'
+                Pname='出版社名'
+
+
+                # 重置索引
+                df = df.reset_index(drop=True)
+
+                # 提取原文件名上的日期
+                filename = os.path.splitext(os.path.basename(file_path))[0]
+
+                # 找到 "A-" 和 "rnt" 在文件名中的索引
+                start_index = filename.index("A-") + len("A-")
+                end_index = filename.index("rnt")
+
+                # 使用切片获取目标部分
+                titleDate = filename[start_index:end_index]
+
+                # 交由下列函數進行
+                paper(df, selected_columns, SUMsales, titleDate, Pname)
+
+                # 删除原始XLS或XLSX文件
+                os.remove(file_path)
 
             # 如果文件名以"PAS"开头且以"en"结尾，进行美國各家版稅結算
             if uploaded_file.name.startswith("PAS") and uploaded_file.name.endswith("en.csv"):
-                # 调用编码转换函数
-                convert_en(file_path)
+                df = pd.read_csv(file_path, encoding='shift_jis')
+
+                # 提取指定标题的列数据
+                selected_columns = ['Release date','Title','Author','Price','Total sales (current month)','Publisher']
+                df = df[selected_columns]
+
+                # 删除'価格'列中值为0的行
+                df = df[df['Total sales (current month)'] != 0]
+
+                # 新增 'SalesAmount' 列
+                df['SalesAmount'] = (df['Price'] * df['Total sales (current month)']).apply(Decimal)
+                selected_columns = ['Release date','Title','Author','Price','Total sales (current month)','Publisher', 'SalesAmount']
+
+
+                SUMsales ='SalesAmount'
+                Pname='Publisher'
+
+
+                # 重置索引
+                df = df.reset_index(drop=True)
+
+                # 提取原文件名上的日期
+                filename = os.path.splitext(os.path.basename(file_path))[0]
+
+                # 找到 "A-" 和 "rnt" 在文件名中的索引
+                start_index = filename.index("A-") + len("A-")
+                end_index = filename.index("rnt")
+
+                # 使用切片获取目标部分
+                titleDate = filename[start_index:end_index]
+
+                # 交由下列函數進行
+                paper(df, selected_columns, SUMsales, titleDate, Pname)
+
+                # 删除原始XLS或XLSX文件
+                os.remove(file_path)
             
             # 如果文件是XLS或XLSX，提取第二页，进行台灣各家版稅結算
             if uploaded_file.name.endswith(('.xls', '.xlsx')):
-                # 提取第二页并将其转换为CSV文件
-                sheet_index = 1  # 第二页的索引为1
 
+                # 读取Excel文件
+                df = pd.read_excel(file_path, sheet_name=1) # sheet_name=1提取第二页
                 # 提取原文件名上的日期
                 titleDate = os.path.splitext(os.path.basename(file_path))[0].split('_')[0]
 
                 selected_columns = ['系列書名', '集數', '出版社', '售價', '購買日期']
                 SUMsales ='售價'
+                Pname = '出版社'
         
                 # 交由下列函數進行
-                paper(file_path, selected_columns, SUMsales, titleDate, sheet_index)
+                paper(df, selected_columns, SUMsales, titleDate, Pname)
 
                 # 删除原始XLS或XLSX文件
                 os.remove(file_path)
@@ -68,76 +138,16 @@ def update(request):
     context = {"success_files": success_files}
     return render(request, 'update.html', context)
 
-#處理日本報表
-def convert_shift_jis_to_utf8(file_path):
-    try:
-        # 使用 pd.read_csv 读取 CSV 文件，指定编码为 'shift_jis'
-        df = pd.read_csv(file_path, encoding='shift_jis')
-
-        # 提取指定标题的列数据
-        selected_columns = ['掲載日', '書名', '著者名', '価格', '当月合計冊数', '出版社名']
-        df = df[selected_columns]
-
-        # 删除'価格'列中值为0的行
-        df = df[df['価格'] != 0]
-
-        # 重置索引
-        df = df.reset_index(drop=True)
-
-        # 将处理后的数据保存回原始的CSV文件（替换原文件），并将编码设置为 'utf-8'
-        df.to_csv(file_path, index=False, encoding='utf-8')
-
-        print("指定标题的列数据已提取并删除'価格'为0的数据，并保存回原始的CSV文件。")
-    except Exception as e:
-        print(f"处理失败: {str(e)}")
-
-#處理美國報表
-def convert_en(file_path):
-    try:
-        # 读取SHIFT_JIS编码的文件
-        with codecs.open(file_path, 'r', encoding='shift_jis') as source_file:
-            content = source_file.read()
-
-        # 转换为UTF-8编码
-        content_utf8 = content.encode('utf-8')
-
-        # 保存文件以UTF-8编码
-        with codecs.open(file_path, 'wb') as target_file:
-            target_file.write(content_utf8)
-
-        print(f"文件已成功从SHIFT_JIS编码转换为UTF-8编码。")
-
-        # 读取CSV文件
-        df = pd.read_csv(file_path)
-
-        # 提取指定标题的列数据
-        selected_columns = ['Release date','Title','Author','Price','Total sales (current month)','Publisher']
-        df = df[selected_columns]
-
-        # 删除'価格'列中值为0的行
-        df = df[df['Total sales (current month)'] != 0]
-
-        # 重置索引
-        df.to_csv(file_path, index=False, encoding='utf-8')
-
-        # 将处理后的数据保存回原始的CSV文件（替换原文件）
-        df.to_csv(file_path, index=False)
-
-        print("指定标题的列数据已提取并删除'Price'为0的数据，并保存回原始的CSV文件。")
-    except Exception as e:
-        print(f"处理en失败: {str(e)}")
-
 #處理報表
-def paper(file_path, selected_columns, SUMsales, titleDate, sheet_index): #EXCEL轉成csv
+def paper(df, selected_columns, SUMsales, titleDate, Pname): #EXCEL轉成csv
     try:
-        # 读取Excel文件
-        df = pd.read_excel(file_path, sheet_name=sheet_index)
+
         
         # 提取包含指定标题的列数据
         df = df[selected_columns]
         
         # 使用groupby按出版社名称分组
-        grouped = df.groupby('出版社')
+        grouped = df.groupby(Pname)
 
         for publisher_name, publisher_data in grouped:
             # 在这里，publisher_data 包含属于同一出版社的数据
@@ -281,7 +291,7 @@ def FindFxRate(area, exchange_rate_method, titleDate):
             else:
                 print("未找到關鍵字")
         else:
-            print("匯率方式為無，或台幣只支援中間價的匯率方式")
+            print("匯率方式為無，匯率以1計算")
             FxRate =1
     else:
         print("HTTP請求失敗，狀態碼:", response.status_code)
