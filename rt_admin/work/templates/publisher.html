@@ -84,7 +84,7 @@
                   <tr>
                     <th scope="col">出版社名称</th>
                     <th scope="col">合作地區</th>
-                    <th scope="col">状态</th>
+                    <th scope="col">原始报表名称</th>
                     <th scope="col">保底金</th>
                     <th scope="col">手續費</th>
                     <th scope="col">拆分比</th>
@@ -96,7 +96,7 @@
                   <tr>
                     <td>{{publisher.name}}</td>
                     <td>{{publisher.area}}</td>
-                    <td>{{publisher.status}}</td>
+                    <td>{{publisher.shelf_name}}</td>
                     <td>{{publisher.advance_payment}}</td>
                     <td>{% widthratio publisher.fees_percentage 1 100 %}%</td>
                     <td>{% widthratio publisher.ratio_percentage 1 100 %}%</td>

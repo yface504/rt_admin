@@ -131,72 +131,84 @@ def convert_xlsx_sheet_to_csv(xlsx_file_path, sheet_index, output_csv_file_path)
         selected_columns = ['系列書名', '集數', '出版社', '售價', '購買日期']
         df = df[selected_columns]
         
-        # 计算"售價"列的总和
-        total_sales = df['售價'].sum()
+        # 使用groupby按出版社名称分组
+        grouped = df.groupby('出版社')
 
-        # 将总和传递给 sum 变量
-        sum = total_sales
-        
-        # 将数据保存为CSV文件
-        # df.to_csv(output_csv_file_path, index=False, encoding='utf-8')
-        
-        # 提取titleDate和tw_shelf_name
-        file_name_parts = os.path.splitext(os.path.basename(output_csv_file_path))[0].split('_')
-        titleDate = file_name_parts[0]
-        tw_shelf_name = file_name_parts[1]
+        for publisher_name, publisher_data in grouped:
+            # 在这里，publisher_data 包含属于同一出版社的数据
+            # 可以在每个出版社上应用你需要的操作
+            # publisher_name 可以用于标识出版社
 
-        # 查询匹配的publisher数据
-        publisher = Publisher.objects.filter(shelf_name=tw_shelf_name).first()
+            # 计算"售價"列的总和
+            total_sales = publisher_data['售價'].sum()
 
-        if publisher:
-            # 提取需要的数据
-            tw_fees = publisher.fees_percentage
-            tw_ratio = publisher.ratio_percentage
-            tw_name = publisher.name
-            area = publisher.area
-            exchange_rate_method = publisher.exchange_rate_method
+            # 将总和传递给 sum 变量
+            sum = total_sales
+            
+            # 提取titleDate和tw_shelf_name
+            file_name_parts = os.path.splitext(os.path.basename(output_csv_file_path))[0].split('_')
+            titleDate = file_name_parts[0]
+            # tw_shelf_name = file_name_parts[1]
 
-            # 构建新文件名
-            new_file_name = f"{tw_name}_TW_{titleDate}"
-            new_file_dir = os.path.join(settings.STATICFILES_DIRS[0], 'paper')  # 目录路径
-            new_file_path = os.path.join(new_file_dir, new_file_name + '.xlsx')
+            # 查询匹配的publisher数据
+            publisher = Publisher.objects.filter(shelf_name=publisher_name).first()
 
-            # 打开 sample.xlsx 文件，仅加载 report 工作表
-            sample_file_path = os.path.abspath(os.path.join(settings.STATICFILES_DIRS[0], 'sample.xlsx'))
-            sample_workbook = openpyxl.load_workbook(sample_file_path, data_only=True)
-            srs = sample_workbook['report']
+            if publisher:
+                # 提取需要的数据
+                fees = publisher.fees_percentage
+                ratio = publisher.ratio_percentage
+                name = publisher.name
+                area = publisher.area
+                exchange_rate_method = publisher.exchange_rate_method
 
-            # 调用 FindFxRate 函数，传递 area、exchange_rate_method 和 titleDate
-            FxRate = FindFxRate(area, exchange_rate_method, titleDate)
+                # 获取映射值，如果 area 存在于 area_map 中，就获取映射值，否则使用默认值 'UNKNOWN'
+                area_map = {
+                    '台湾': 'TW',
+                    '日本': 'JP',
+                    '美国': 'EN',
+                }
+                area_code = area_map.get(area, 'UNKNOWN')
 
-            # 修改 report 工作表的特定单元格
-            srs['B3'] = tw_name #出版社名
-            srs['F3'] = int(titleDate) #報表月            
-            srs['A5'] = 'TW'
-            srs['B5'] = FxRate
-            srs['C5'] = sum
-            srs['D5'] = tw_fees #手續費
-            srs['E5'] = tw_ratio #拆帳比
-            srs['F5'] = round(sum * (1 - tw_fees) * tw_ratio * FxRate, 2) #拆帳小計
+                # 构建新文件名
+                new_file_name = f"{name}_{area_code}_{titleDate}"
+                new_file_dir = os.path.join(settings.STATICFILES_DIRS[0], 'paper')  # 目录路径
+                new_file_path = os.path.join(new_file_dir, new_file_name + '.xlsx')
 
+                # 打开 sample.xlsx 文件，仅加载 report 工作表
+                sample_file_path = os.path.abspath(os.path.join(settings.STATICFILES_DIRS[0], 'sample.xlsx'))
+                sample_workbook = openpyxl.load_workbook(sample_file_path, data_only=True)
+                srs = sample_workbook['report']
 
-            # 添加明细工作表
-            new_sheet = sample_workbook.create_sheet("明細")
+                # 调用 FindFxRate 函数，传递 area、exchange_rate_method 和 titleDate
+                FxRate = FindFxRate(area, exchange_rate_method, titleDate)
 
-            # 将处理后的数据存放在 "明細" 中，首先添加列标题
-            new_sheet.append(df.columns.tolist())  # 添加列标题
+                # 修改 report 工作表的特定单元格
+                srs['B3'] = name #出版社名
+                srs['F3'] = int(titleDate) #報表月            
+                srs['A5'] = 'TW'
+                srs['B5'] = FxRate
+                srs['C5'] = sum
+                srs['D5'] = fees #手續費
+                srs['E5'] = ratio #拆帳比
+                srs['F5'] = round(sum * (1 - fees) * ratio * FxRate, 2) #拆帳小計
 
-            # 添加 DataFrame 中的数据行
-            for _, row in df.iterrows():
-                new_sheet.append(row.tolist())
+                # 添加明细工作表
+                new_sheet = sample_workbook.create_sheet("明細")
 
-            # 创建新的.xlsx文件，将 sample.xlsx 另存为新路径和文件名
-            new_sample_file_path = os.path.join(new_file_dir, new_file_path)
-            sample_workbook.save(new_sample_file_path)
+                # 将处理后的数据存放在 "明細" 中，首先添加列标题
+                new_sheet.append(selected_columns)  # 添加列标题
 
-            print(f"已创建新的 '明細' 工作表并保存到新文件。")
-        else:
-            print(f"找不到匹配的Publisher数据。")
+                # 添加 DataFrame 中的数据行
+                for _, row in publisher_data.iterrows():
+                    new_sheet.append(row.tolist())
+
+                # 创建新的.xlsx文件，将 sample.xlsx 另存为新路径和文件名
+                new_sample_file_path = os.path.join(new_file_dir, new_file_path)
+                sample_workbook.save(new_sample_file_path)
+
+                print(f"已创建新的 '明細' 工作表并保存到新文件。")
+            else:
+                print(f"找不到匹配的Publisher数据。")
             
     except Exception as e:
         print(f"转换失败: {str(e)}")
