@@ -1,0 +1,37 @@
+def read_and_extract_info(file_path):
+    # 使用集合存储分组名称和新资料夹名称，确保唯一性
+    unique_group_names = set()
+    unique_new_folder_names = set()
+    info_list = []
+
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            if line.strip():  # 忽略空行
+                group_name, episode, rule1, rule2, new_folder_name = extract_info_from_line(line)
+                # 添加到唯一集合中，确保唯一性
+                unique_group_names.add(group_name)
+                unique_new_folder_names.add(new_folder_name)
+                # 保留完整信息列表用于可能的其它用途
+                info_list.append((group_name, episode, rule1, rule2, new_folder_name))
+    
+    return info_list, unique_group_names, unique_new_folder_names
+
+def process_folders(unique_group_names, unique_new_folder_names, directory):
+    # 检查分组资料夹是否存在
+    for group_name in unique_group_names:
+        group_path = os.path.join(directory, group_name)
+        if not os.path.exists(group_path):
+            print(f"缺少分组资料夹：{group_name}")
+            # 这里可以根据需要创建缺失的分组资料夹
+
+    # 检查新资料夹是否存在
+    for new_folder_name in unique_new_folder_names:
+        new_folder_path = os.path.join(directory, new_folder_name)
+        if not os.path.exists(new_folder_path):
+            print(f"缺少新资料夹：{new_folder_name}")
+            # 这里可以根据需要创建缺失的新资料夹
+
+# 主执行逻辑
+file_path = './納品.txt'
+info_list, unique_group_names, unique_new_folder_names = read_and_extract_info(file_path)
+process_folders(unique_group_names, unique_new_folder_names, hd)
