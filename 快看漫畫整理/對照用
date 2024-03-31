@@ -1,10 +1,9 @@
-if os.path.exists(thum_new_folder_path):
-    # 確保目標目錄存在
-    if not os.path.exists(group_new_folder_path):
-        os.makedirs(group_new_folder_path)
-    # 移動或合併thum_new_folder_path到group_new_folder_path
-    merge_folders(thum_new_folder_path, group_new_folder_path)
-    # 刪除thum_new_folder_path下所有內容後，刪除該目錄
-    shutil.rmtree(thum_new_folder_path)
-    # 重新創建一個空的thum_new_folder_path目錄
-    os.makedirs(thum_new_folder_path)
+
+已完成: I:/快看/[ok]\大医凌然
+已完成: I:/快看/[ok]\30岁男子物语
+已完成: I:/快看/[ok]\拴好我的狼
+已完成: I:/快看/[ok]\狼的谎言
+已完成: I:/快看/[ok]\哪里来的大宝贝
+已完成: I:/快看/[ok]\DOLO命运胶囊
+已完成: I:/快看/[ok]\蛊蝶
+已完成: I:/快看/[ok]\春日将至
