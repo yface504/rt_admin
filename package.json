@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.42.4",
+    "exceljs": "^4.4.0"
+  }
+}
