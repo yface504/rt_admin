@@ -1,0 +1,44 @@
+def extract_info_from_line(line):
+    parts = line.strip().split('\t')
+    group_name = parts[7].strip()  # 分組名稱
+    episode = parts[4].strip()  # 集數
+    rule1 = parts[0].strip()  # 規則1
+    rule2 = f"{parts[1]}_{parts[2].strip().strip()}"  # 規則2
+    rule3 = parts[1].strip()  # 新增規則3
+    index_of_bracket = parts[2].find('[')
+    new_folder_name = f"{parts[0].strip()}_{parts[2][:index_of_bracket].strip()}"
+    return group_name, episode, rule1, rule2, rule3, new_folder_name  # 修改回傳值順序，現在rule3在rule2後面
+
+def read_and_extract_info(file_path):
+    unique_group_names = set()
+    unique_new_folder_names = set()
+    new_folder_to_group_map = {}
+    info_list = []
+
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            if line.strip():
+                group_name, episode, rule1, rule2, rule3, new_folder_name = extract_info_from_line(line)  # 更新extract_info_from_line的使用
+                unique_group_names.add(group_name)
+                unique_new_folder_names.add(new_folder_name)
+                new_folder_to_group_map[new_folder_name] = group_name 
+                info_list.append((group_name, episode, rule1, rule2, rule3, new_folder_name))  # 更新info_list中的元組結構
+    
+    return info_list, unique_group_names, unique_new_folder_names, new_folder_to_group_map
+
+def perform_file_operations(directory, info_list):
+    for group_name, episode, rule1, rule2, rule3, new_folder_name in info_list:
+        group_path = os.path.join(directory, group_name)
+        thum_path = os.path.join(group_path, 'thum')
+        episode_path = os.path.join(thum_path, episode)
+
+        if not os.path.exists(episode_path):
+            print((group_name, episode))
+        else:
+            for file in os.listdir(episode_path):
+                new_file_name = f"{rule3}_{file}"  # 使用rule3来重命名文件
+                os.rename(os.path.join(episode_path, file), os.path.join(episode_path, new_file_name))
+            # 其他文件操作...
+
+info_list, unique_group_names, unique_new_folder_names, new_folder_to_group_map = read_and_extract_info(file_path)
+perform_file_operations("E:/下載/快看", info_list)

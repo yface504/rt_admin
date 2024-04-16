@@ -6,7 +6,7 @@ import sys
 # 先複製check上的 C ~ J 欄到 納品.txt
 # 設定要檢查的目錄
 hd = "I:/快看/[ok]"
-#hd = "E:/下載/快看"
+# hd = "E:/下載/快看"
 
 file_path = f'E:\python\快看漫畫整理\納品.txt'
 
@@ -14,7 +14,7 @@ def extract_info_from_line(line):
     parts = line.strip().split('\t')
     group_name = parts[7].strip()  # 分組名稱
     episode = parts[4].strip()  # 集數
-    rule1 = parts[0].strip()  # 規則1
+    rule1 = parts[1].strip()  # 規則1
     rule2 = f"{parts[1]}_{parts[2].strip().strip()}"  # 規則2
     index_of_bracket = parts[2].find('[')
     new_folder_name = f"{parts[0].strip()}_{parts[2][:index_of_bracket].strip()}"
