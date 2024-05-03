@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="icon">
+    <file>保存.png</file>
+    <file>menu.png</file>
+    <file>file_open.png</file>
+    <file>docs.png</file>
+    <file>正方形.png</file>
+    <file>要求.png</file>
+    <file>关闭.png</file>
+    <file>放大视窗.png</file>
+    <file>放大镜.png</file>
+    <file>齿轮.png</file>
+    <file>缩小.png</file>
+  </qresource>
+</RCC>
