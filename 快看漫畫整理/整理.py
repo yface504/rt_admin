@@ -97,8 +97,12 @@ def process_folders(directory, unique_group_names, unique_new_folder_names, new_
         else:
             # 檢查每個文件是否符合四位數.jpg的格式
             for file in os.listdir(episode_path):
-                if not pattern.match(file):
-                    non_compliant_files.append((group_name, episode, file))
+                    if file.startswith('9') and file.endswith('.jpg'):
+                        continue
+                    if file == 'cover.tif':
+                        continue
+                    if not pattern.match(file):
+                        non_compliant_files.append((group_name, episode, file))
 
     for new_folder_name in unique_new_folder_names:
         group_name = new_folder_to_group_map[new_folder_name]
