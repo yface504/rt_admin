@@ -19,16 +19,17 @@ for subdir, dirs, files in os.walk(root_dir):
 
                 # 遍歷EPUB文件中的所有項目
                 for item in book.get_items():
-                    # 確保項目有media_type屬性，然後檢查是否為圖像
                     if hasattr(item, 'media_type') and item.media_type.startswith('image/'):
                         try:
                             # 使用Pillow打開圖像
                             image = Image.open(io.BytesIO(item.content))
+                            # 獲取圖像名稱，移除前置的目錄路徑
+                            image_name = os.path.basename(item.get_name())
                             # 構建輸出文件的完整路徑，將圖片保存為JPEG格式
-                            output_file = os.path.join(subdir, os.path.splitext(item.get_name())[0] + '.jpg')
+                            output_file = os.path.join(subdir, os.path.splitext(image_name)[0] + '.jpg')
                             
-                            # 確保保存圖片的目錄存在（處理可能的嵌套目錄）
-                            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+                            # 確保保存圖片的目錄存在
+                            os.makedirs(subdir, exist_ok=True)
                             
                             # 保存圖像為JPEG格式
                             image.save(output_file, 'JPEG')
