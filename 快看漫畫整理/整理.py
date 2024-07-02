@@ -5,8 +5,8 @@ import sys
 
 # 先複製check上的 C ~ J 欄到 納品.txt
 # 設定要檢查的目錄
-hd = "I:/快看/[ok]"
-# hd = "E:/下載/快看"
+# hd = "I:\KADOKAWA"
+hd = "I:\快看\[ok]"
 
 file_path = f'E:\python\快看漫畫整理\納品.txt'
 
@@ -175,5 +175,10 @@ def perform_file_operations(directory, info_list):
 
     # 列出所有group_name的路徑
     for group_name in set(info[0] for info in info_list):
-        print("已完成:",os.path.join(new_folder_path))
+        new_folder_path = os.path.join(directory, group_name, 'thum', new_folder_name)  # 確保路徑正確
+        print("已完成:", os.path.join(new_folder_path))
+
+    # # 列出所有group_name的路徑
+    # for group_name in set(info[0] for info in info_list):
+    #     print("已完成:",os.path.join(new_folder_path))
 perform_file_operations(hd, info_list)
