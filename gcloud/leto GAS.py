@@ -20,7 +20,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("./coastal-haven-427921
 client = gspread.authorize(creds)
 
 # 打開Google Sheets
-spreadsheet_id = "1wl7k2tmgsc6f-ZqLvMAz6Ga1SNKHk9eIRQ1-VU6zxQQ"
+spreadsheet_id = "1qdUlGp8PQNQbsXT-0xwf0iRRuneU4fTFv6Ia-zaoNxY"
 sheet = client.open_by_key(spreadsheet_id).sheet1
 
 # 讀取數據
