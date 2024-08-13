@@ -4,10 +4,6 @@ git
 運行ts
 deno run --allow-read --allow-write --allow-net --allow-env
 
-DENO語言無法運行
-打開命令面板（Ctrl+Shift+P），輸入 Preferences: Open Settings (JSON)，然後選擇它。
-加入
-"deno.enable": true,
-"deno.lint": true,
-"editor.formatOnSave": true,
-"[typescript]": { "editor.defaultFormatter": "denoland.vscode-deno" }
+
+python-gas
+print(df_copy.head(10))

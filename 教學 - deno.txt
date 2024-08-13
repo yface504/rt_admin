@@ -1,0 +1,21 @@
+Dedn
+語言無法運行
+打開命令面板（Ctrl+Shift+P），輸入 Preferences: Open Settings (JSON)，然後選擇它。
+加入
+"deno.enable": true,
+"deno.lint": true,
+"editor.formatOnSave": true,
+"[typescript]": { "editor.defaultFormatter": "denoland.vscode-deno" }
+
+
+# 從 Deno 中使用 Deno.run 方法來調用外部 Python 腳本
+const process = Deno.run({
+    cmd: ["python", "your_script.py"],
+    stdout: "piped",
+    stderr: "piped"
+});
+
+const output = await process.output(); // 捕獲標準輸出
+const error = await process.stderrOutput(); // 捕獲標準錯誤
+
+process.close(); // 關閉進程
