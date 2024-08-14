@@ -8,14 +8,16 @@ Dedn
 "[typescript]": { "editor.defaultFormatter": "denoland.vscode-deno" }
 
 
-# 從 Deno 中使用 Deno.run 方法來調用外部 Python 腳本
-const process = Deno.run({
-    cmd: ["python", "your_script.py"],
-    stdout: "piped",
-    stderr: "piped"
+# 從 Deno 中調用外部 Python 腳本
+const command = new Deno.Command('python3', {
+args: [ "ad_cost_anal.py" ],
+cwd: "sql",  // 設定工作目錄為 sql/
 });
+const { stdout, stderr } = await command.output();
+console.log(new TextDecoder().decode(stdout)); // 捕獲標準輸出
+console.log(new TextDecoder().decode(stderr)); // 捕獲標準錯誤
 
-const output = await process.output(); // 捕獲標準輸出
-const error = await process.stderrOutput(); // 捕獲標準錯誤
 
-process.close(); // 關閉進程
+# 取得最後的時間
+const 上個月最後一天 = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().split('T')[0] + ' 23:59:59';
+const 昨天 = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] + ' 23:59:59';
