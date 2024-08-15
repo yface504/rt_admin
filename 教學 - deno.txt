@@ -21,3 +21,4 @@ console.log(new TextDecoder().decode(stderr)); // 捕獲標準錯誤
 # 取得最後的時間
 const 上個月最後一天 = new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().split('T')[0] + ' 23:59:59';
 const 昨天 = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0] + ' 23:59:59';
+要用JSON回傳訊息
