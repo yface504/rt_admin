@@ -1,0 +1,67 @@
+哪些情況資料不完整
+1、停電、維護，自動更新無法執行
+2、系統出錯，程式中斷
+3、有些表格會比較晚更新，如廣告成本(db_cms.ad_costs)，
+
+
+廣告成本，把廣告成本的月份檢查寫在sql查詢的開頭，如果上個月份/或這個月的廣告成本出現了，才開始檢查
+	如果check_EndDate = new_costs_date : 離開程式 ( 3 )
+					  > 			   : 錯誤
+					  <				   : 執行查詢更新，完成時更新check_EndDate ( 1 )
+
+Deno程式
+已設定db連線
+check_point(D_Table, D_Date, sql_Name, type, Default_start, googlesheets?)
+D_Table:目標表格
+D_Date:目標日期欄位
+sql_Name:自動更新的程式
+type:月更新m 或 日更新d
+Default_start:初次建表的預設開始時間
+googlesheets?:選擇，執行更新到googlesheets的python程式, 先空白
+
+
+以下為上方模組的邏輯
+select record_point
+from check_point
+where function=$(sql_Name)
+ORDER BY id DESC
+LIMIT 1;
+record_point的型態:文字_記錄日期，底線後面的記錄日期，縮寫為rp
+如果值是start開頭
+	setp.1 將D_Table的D_Date=rp的資料刪除
+	setp.2 執行 update_rp( start, rp, sql_Name )
+	setp.3 執行 $(sql_Name)(rp)
+	setp.4 執行 update_rp( end, end_date, sql_Name )
+	選擇   python更新googlesheets
+	setp.5 離開程式
+如果值是end開頭
+	setp.1 執行 update_rp( start, start_date, sql_Name )
+	setp.2 執行 $(sql_Name)(start_date)
+	setp.3 執行 update_rp( end, end_date, sql_Name )
+	選擇   python更新googlesheets
+	setp.4 離開程式
+如果沒資料，檢查D_Table有沒有資料
+			如果也沒資料
+				setp.1 執行 update_rp( start, Default_start, sql_Name )
+				setp.2 執行 $(sql_Name)(Default_start)
+				setp.3 執行 update_rp( end, end_date, sql_Name )
+				選擇   python更新googlesheets
+				setp.4 離開程式
+			如果有資料
+				setp.1 將D_Table的資料清空
+				setp.2 執行 update_rp( start, Default_start, sql_Name )
+				setp.3 執行 $(sql_Name)(Default_start)
+				setp.4 執行 update_rp( end, end_date, sql_Name )
+				選擇   python重置並更新googlesheets
+				setp.5 離開程式
+
+
+start_date:如果type是m，格式為yyyy-mm，值=rp+1個月、如果type是d，格式為yyyy-mm-dd，值=rp+1天
+end_date:如果type是m，格式為yyyy-mm，值=上個月、如果type是d，格式為yyyy-mm-dd，值=昨天
+函式update_rp( state, rp, sql_Name )
+	在表record_point新增一行記錄
+	date:現在的時間
+	record_point:$(start)_$(rp)
+	function:$(sql_Name)
+
+
