@@ -5,10 +5,10 @@ import sys
 
 # 先複製check上的 C ~ J 欄到 納品.txt
 # 設定要檢查的目錄
-# hd = "I:\KADOKAWA"
-hd = "I:\快看\[ok]"
+hd = r"I:\KADOKAWA\8月"
+# hd = r"I:\快看\[ok]"
 
-file_path = f'E:\python\快看漫畫整理\納品.txt'
+file_path = r'E:\python\快看漫畫整理\納品.txt'
 
 def extract_info_from_line(line):
     parts = line.strip().split('\t')
