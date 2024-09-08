@@ -1,6 +1,9 @@
 git
 新建倉庫 git init
 
+如果gitignore加入，仍會上傳，用下列指令
+git rm --cached 文件名、資料夾名
+
 運行ts
 deno run --allow-read --allow-write --allow-net --allow-env --allow-run auto_check.ts
 deno run --allow-read --allow-write --allow-net --allow-env --allow-run cronplan.ts
