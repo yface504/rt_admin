@@ -4,7 +4,7 @@ from PIL import Image
 import io
 
 # 設置根目錄
-root_dir = r"I:\KADOKAWA\9月"
+root_dir = r"I:\KADOKAWA\copy"
 
 # 遍歷根目錄下的所有子目錄和文件
 for subdir, dirs, files in os.walk(root_dir):

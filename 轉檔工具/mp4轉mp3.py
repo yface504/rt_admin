@@ -1,7 +1,7 @@
 from moviepy.editor import *
 
 # 載入你的MP4文件
-video = VideoFileClip(r"E:\下載\A New Day, a New Way @ フリーBGM DOVA-SYNDROME OFFICIAL YouTube CHANNEL.mp4")
+video = VideoFileClip(r"E:\下載\Line的傳訊息聲.mp4")
                       
 # 從視頻中提取音頻
 audio = video.audio
