@@ -7,7 +7,7 @@ output_file = r'E:\python\遊戲開發工具\轉換後劇本.txt'
 
 # 替代文字對應表
 replacement_dict = {
-    "N": "???",
+    "N": "？？？",
     "Z": "子晴",
     "A": "阿蜜莉雅",
     "WM": "白貓"
