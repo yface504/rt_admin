@@ -7,10 +7,10 @@ output_file = r'E:\python\遊戲開發工具\轉換後劇本.txt'
 
 # 替代文字對應表
 replacement_dict = {
-    "N": "？？？",
-    "Z": "子晴",
-    "A": "阿蜜莉雅",
-    "W": "白貓"
+    "U": "悠介",
+    "I": "愛里醬",
+    "I2": "愛里",
+    "L": "流氓"
 }
 
 # 檢查檔案是否存在
@@ -25,6 +25,9 @@ if os.path.exists(input_file):
             # 如果該行是空行，則跳過處理
             if not line:
                 continue
+            
+            # 替換句子中的 `%` 為 `%%`
+            line = line.replace('%', '%%')
             
             # 檢查是否有對應的開頭文字
             match_found = False
